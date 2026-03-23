@@ -74,3 +74,72 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+model Exercise {
+  id   String @id @default(uuid())
+  name String @unique
+
+  muscleGroups     MuscleGroup[]
+  workoutExercises WorkoutExercise[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MuscleGroup {
+  id   String @id @default(uuid())
+  name String @unique
+
+  exercises Exercise[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkoutSession {
+  id          String   @id @default(uuid())
+  name        String?
+  targetGroup String?
+  date        DateTime @default(now())
+
+  exercises WorkoutExercise[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkoutExercise {
+  id String @id @default(uuid())
+
+  workoutSession   WorkoutSession @relation(fields: [workoutSessionId], references: [id])
+  workoutSessionId String
+
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId String
+
+  sets  ExerciseSet[]
+  order Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workoutSessionId])
+  @@index([exerciseId])
+}
+
+model ExerciseSet {
+  id String @id @default(uuid())
+
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id])
+  workoutExerciseId String
+
+  reps     Int?
+  weight   Float?
+  duration Int?
+  distance Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workoutExerciseId])
+}
